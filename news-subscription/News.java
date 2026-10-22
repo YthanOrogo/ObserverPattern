@@ -3,7 +3,6 @@ package com.newsservice;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/** Immutable news item published by the NewsAgency. */
 public final class News {
     private final String headline;
     private final String content;

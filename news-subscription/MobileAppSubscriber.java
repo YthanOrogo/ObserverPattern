@@ -1,6 +1,5 @@
 package com.newsservice;
 
-/** Concrete Observer: receives news as a push notification. */
 public class MobileAppSubscriber implements Subscriber {
     private final String name;
     private final String deviceId;

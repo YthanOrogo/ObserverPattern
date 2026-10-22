@@ -6,16 +6,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
-/**
- * Concrete Subject. Knows subscribers only through the Subscriber interface
- * (loose coupling). Thread-safe, so subscribers can join/leave at any time
- * without disrupting delivery to others. An optional ExecutorService lets
- * notifications run in parallel for scalability.
- */
 public class NewsAgency implements NewsPublisher {
 
     private final Map<Subscriber, Set<NewsCategory>> subscribers = new ConcurrentHashMap<>();
-    private final ExecutorService executor; // null => synchronous delivery
+    private final ExecutorService executor;
 
     public NewsAgency() {
         this(null);
@@ -54,7 +48,6 @@ public class NewsAgency implements NewsPublisher {
     @Override
     public void publish(News news) {
         for (Map.Entry<Subscriber, Set<NewsCategory>> entry : subscribers.entrySet()) {
-            // BREAKING news goes to everyone; otherwise match preferences
             if (news.getCategory() == NewsCategory.BREAKING
                     || entry.getValue().contains(news.getCategory())) {
                 deliver(entry.getKey(), news);
@@ -66,7 +59,7 @@ public class NewsAgency implements NewsPublisher {
         Runnable task = () -> {
             try {
                 subscriber.update(news);
-            } catch (Exception e) { // one failing subscriber must not affect others
+            } catch (Exception e) {
                 System.err.println("Failed to notify " + subscriber.getName() + ": " + e.getMessage());
             }
         };
